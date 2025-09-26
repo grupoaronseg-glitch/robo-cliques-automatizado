@@ -186,27 +186,30 @@ class ClickRobot:
         try:
             # Obtém novo proxy para este clique
             proxy = self.get_next_proxy()
-            await self.log_message(f"Usando proxy: {proxy if proxy else 'Sem proxy'}")
+            await self.log_message(f"🔄 Usando proxy: {proxy if proxy else 'Sem proxy'}")
             
             # Cria driver com o proxy
+            await self.log_message(f"🌐 Criando navegador...")
             driver = self.create_driver(proxy)
             
             # Navega para a URL
-            await self.log_message(f"Navegando para: {url}")
+            await self.log_message(f"📡 Navegando para: {url}")
             driver.get(url)
             
-            # Aguarda página carregar
-            await asyncio.sleep(2)
+            # Aguarda página carregar completamente
+            await self.log_message(f"⏳ Página carregando...")
+            await asyncio.sleep(3)
             
             # Simula comportamento humano - scroll aleatório
             driver.execute_script("window.scrollTo(0, Math.floor(Math.random() * 500));")
             
-            # Aguarda mais um pouco para parecer natural
-            await asyncio.sleep(random.uniform(2, 4))
+            # Aguarda 2 segundos para parecer natural (como solicitado)
+            await self.log_message(f"👤 Simulando comportamento humano...")
+            await asyncio.sleep(2)
             
             self.clicks_made += 1
             self.last_click_time = datetime.now()
-            await self.log_message(f"✅ Clique #{self.clicks_made} realizado com sucesso!")
+            await self.log_message(f"✅ Clique #{self.clicks_made} realizado com sucesso em {url}")
             
         except Exception as e:
             self.error_message = str(e)
@@ -214,7 +217,11 @@ class ClickRobot:
             
         finally:
             if driver:
-                driver.quit()
+                try:
+                    driver.quit()
+                    await self.log_message(f"🔒 Navegador fechado")
+                except:
+                    pass
     
     async def run(self, targets: List[ClickTarget], config: RobotConfig):
         """Loop principal do robô"""
