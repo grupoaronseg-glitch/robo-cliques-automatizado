@@ -165,6 +165,7 @@ class ClickRobot:
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920,1080')
         options.add_argument(f'--user-agent={self.ua.random}')
+        options.binary_location = '/usr/bin/chromium'
         
         if proxy:
             options.add_argument(f'--proxy-server={proxy}')
