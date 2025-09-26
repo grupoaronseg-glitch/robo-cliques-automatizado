@@ -158,6 +158,9 @@ class ClickRobot:
     
     def create_driver(self, proxy=None):
         """Cria uma instância do Chrome WebDriver"""
+        # Install chromedriver automatically
+        chromedriver_autoinstaller.install()
+        
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
