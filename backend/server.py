@@ -158,25 +158,35 @@ class ClickRobot:
     
     def create_driver(self, proxy=None):
         """Cria uma instância do Chrome WebDriver"""
-        # Install chromedriver automatically
-        chromedriver_autoinstaller.install()
-        
-        options = Options()
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--window-size=1920,1080')
-        options.add_argument(f'--user-agent={self.ua.random}')
-        options.binary_location = '/usr/bin/chromium'
-        
-        if proxy:
-            options.add_argument(f'--proxy-server={proxy}')
-        
         try:
+            # Install chromedriver automatically
+            chromedriver_autoinstaller.install()
+            
+            options = Options()
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--window-size=1920,1080')
+            options.add_argument('--disable-blink-features=AutomationControlled')
+            options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            options.add_experimental_option('useAutomationExtension', False)
+            options.add_argument(f'--user-agent={self.ua.random}')
+            
+            # Try to use system chromium
+            try:
+                options.binary_location = '/usr/bin/chromium'
+            except:
+                pass
+            
+            if proxy:
+                options.add_argument(f'--proxy-server={proxy}')
+            
             driver = webdriver.Chrome(options=options)
+            driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             driver.set_page_load_timeout(30)
             return driver
+            
         except Exception as e:
             raise Exception(f"Erro ao criar driver: {e}")
     
