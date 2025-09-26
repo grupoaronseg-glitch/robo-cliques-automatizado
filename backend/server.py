@@ -342,16 +342,24 @@ async def start_robot(config: RobotConfig):
     
     robot_running = True
     
+    # Reseta o estado do robô
+    robot_instance.running = False
+    robot_instance.clicks_made = 0
+    robot_instance.error_message = None
+    
     # Inicia robô em thread separada
     def run_robot():
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(robot_instance.run(targets, config))
-        global robot_running
-        robot_running = False
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(robot_instance.run(targets, config))
+        except Exception as e:
+            print(f"Erro no thread do robô: {e}")
+        finally:
+            global robot_running
+            robot_running = False
     
-    thread = threading.Thread(target=run_robot)
-    thread.daemon = True
+    thread = threading.Thread(target=run_robot, daemon=True)
     thread.start()
     
     return {"message": "Robô iniciado com sucesso"}
